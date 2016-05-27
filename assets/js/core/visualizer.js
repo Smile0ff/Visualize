@@ -1,9 +1,8 @@
 "use strict";
 
-import "./raf";
+import "../lib/raf";
 
 import Vector from "./vector";
-import Audio from "./audio";
 import Line from "./line";
 import Circle from "./circle";
 
@@ -12,11 +11,11 @@ const MAX_RADIUS = 320;
 const LINE_COUNT = 180;
 const LINE_WIDTH = 1;
 const LINE_HEIGHT = 30;
-const LINE_COLOR = "#fff";
+const LINE_COLOR = "#0f0f0f";
 
 const CIRCLE_RADIUS = 1;
 const CIRCLE_COUNT = 360;
-const CIRCLE_COLOR = "#fff";
+const CIRCLE_COLOR = "#0f0f0f";
 
 let canvas = $("#visualize");
 let context = canvas[0].getContext("2d");
@@ -29,26 +28,24 @@ let circles = [];
 
 let invervalID = 0;
 
-class Visualizer extends Audio{
+class Visualizer{
 
-    constructor(arrayBuffer){
-        super(arrayBuffer);
-        
-        super
-            .decode()
-            .then((done) => {
-                if(!done) return;
-                super.play();
-                this.loop();
-            });
+    constructor(options){
+        this.analyzer = options.analyzer;
+        this.frequencyDomain = options.frequencyDomain;
+        this.timeDomain = options.timeDomain;
 
-        this._events();
         this.setDimension();
         this.setupLines();
         this.setupCircles();
-    }
-    _events(){
+
         $(window).on("resize", (e) => { this.handleResize(e) });
+    }
+    start(){
+        this.loop();
+    }
+    stop(){
+        this.stopLoop();
     }
     handleResize(e){
         this.setDimension();
@@ -99,7 +96,8 @@ class Visualizer extends Audio{
             vector.add({x: cx, y: cy});
 
             let circle = new Circle(vector, {
-                radius: CIRCLE_RADIUS
+                radius: CIRCLE_RADIUS,
+                color: CIRCLE_COLOR
             });
             circle.draw(context);
 
@@ -146,7 +144,8 @@ class Visualizer extends Audio{
             vector.add({x: cx, y: cy});
 
             circles[i] = new Circle(vector, {
-                radius: CIRCLE_RADIUS
+                radius: CIRCLE_RADIUS,
+                color: CIRCLE_COLOR
             });
         }
     }
